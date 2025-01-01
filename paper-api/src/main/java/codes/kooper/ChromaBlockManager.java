@@ -66,7 +66,7 @@ public class ChromaBlockManager {
         Map<Position, BlockData> blocksToUpdate = new HashMap<>();
 
         for (Position position : positions) {
-            long chunkKey = Chunk.getChunkKey(position.blockX(), position.blockZ());
+            long chunkKey = Chunk.getChunkKey(position.blockX() >> 4, position.blockZ() >> 4);
             Map<Position, BlockData> chunkBlocks = blockDataCache.get(chunkKey);
 
             if (chunkBlocks != null && chunkBlocks.containsKey(position)) {
@@ -98,9 +98,8 @@ public class ChromaBlockManager {
      *                  If the chunk key derived from the position is not present in the cache, the block is not set.
      */
     public void setBlock(@NotNull Position position, @NotNull BlockData blockData) {
-        System.out.println(blockDataCache.containsKey(Chunk.getChunkKey(position.blockX() >> 4, position.blockZ() >> 4)) + " < chroma lol");
-        if (!blockDataCache.containsKey(Chunk.getChunkKey(position.blockX(), position.blockZ()))) return;
-        blockDataCache.get(Chunk.getChunkKey(position.blockX(), position.blockZ())).put(position, blockData);
+        if (!blockDataCache.containsKey(Chunk.getChunkKey(position.blockX() >> 4, position.blockZ() >> 4))) return;
+        blockDataCache.get(Chunk.getChunkKey(position.blockX() >> 4, position.blockZ() >> 4)).put(position, blockData);
     }
 
     /**
@@ -147,12 +146,11 @@ public class ChromaBlockManager {
     /**
      * Checks if a block data is present at a specific position in a chunk.
      *
-     * @param chunkKey the key of the chunk
      * @param position the position of the block
      * @return true if the block data is present, false otherwise
      */
-    public boolean hasBlockData(long chunkKey, @NotNull Position position) {
-        Map<Position, BlockData> chunkData = blockDataCache.get(chunkKey);
+    public boolean hasBlockData(@NotNull Position position) {
+        Map<Position, BlockData> chunkData = blockDataCache.get(Chunk.getChunkKey(position.blockX() >> 4 , position.blockZ() >> 4));
         return chunkData != null && chunkData.containsKey(position);
     }
 

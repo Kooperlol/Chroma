@@ -595,15 +595,6 @@ public class CraftEventFactory {
 
         PlayerInteractEvent event = new PlayerInteractEvent(player, action, itemInHand, blockClicked, blockFace, (hand == null) ? null : ((hand == InteractionHand.OFF_HAND) ? EquipmentSlot.OFF_HAND : EquipmentSlot.HAND), clickedPos);
 
-        // Chroma start
-        if ((action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) && blockClicked != null && player.getChromaBlockManager().hasBlockData(blockClicked.getChunk().getChunkKey(), Position.block(blockClicked.getLocation()))) {
-            io.papermc.paper.math.Position pos = Position.block(blockClicked.getLocation());
-            BlockData blockData = player.getChromaBlockManager().getBlockData(pos);
-            player.sendMultiBlockChange(Map.of(pos, blockData));
-            event.setCancelled(true);
-        }
-        // Chroma end
-
         if (cancelledBlock) {
             event.setUseInteractedBlock(Event.Result.DENY);
         }
