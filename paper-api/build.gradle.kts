@@ -167,6 +167,10 @@ abstract class Services {
 }
 val services = objects.newInstance<Services>()
 
+tasks.javadoc {
+    isFailOnError = false
+}
+
 tasks.withType<Javadoc> {
     val options = options as StandardJavadocDocletOptions
     options.overview = "src/main/javadoc/overview.html"

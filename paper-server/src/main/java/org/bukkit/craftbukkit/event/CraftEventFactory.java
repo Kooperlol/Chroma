@@ -576,12 +576,6 @@ public class CraftEventFactory {
         Block blockClicked = null;
         if (position != null) {
             blockClicked = craftWorld.getBlockAt(position.getX(), position.getY(), position.getZ());
-            // Chroma start
-            if (player.getChromaBlockManager().hasBlockData(blockClicked.getChunk().getChunkKey(), Position.block(blockClicked.getLocation()))) {
-                System.out.println("blocked");
-                cancelledBlock = true;
-            }
-            // Chroma end
         } else {
             switch (action) {
                 case LEFT_CLICK_BLOCK:
@@ -599,6 +593,12 @@ public class CraftEventFactory {
         }
 
         PlayerInteractEvent event = new PlayerInteractEvent(player, action, itemInHand, blockClicked, blockFace, (hand == null) ? null : ((hand == InteractionHand.OFF_HAND) ? EquipmentSlot.OFF_HAND : EquipmentSlot.HAND), clickedPos);
+        // Chroma start
+        if (blockClicked != null && action.isRightClick() && player.getChromaBlockManager().hasBlockData(blockClicked.getChunk().getChunkKey(), Position.block(blockClicked.getLocation()))) {
+            event.setCancelled(true);
+        }
+        // Chroma end
+
         if (cancelledBlock) {
             event.setUseInteractedBlock(Event.Result.DENY);
         }
