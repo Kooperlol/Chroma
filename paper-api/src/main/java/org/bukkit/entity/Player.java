@@ -86,7 +86,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      *
      * @return The chroma block manager.
      */
-    codes.kooper.ChromaBlockManager getChromaBlockManager();
+    @NotNull codes.kooper.ChromaBlockManager getChromaBlockManager();
     // Chroma end
 
     /**
