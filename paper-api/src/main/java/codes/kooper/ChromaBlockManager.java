@@ -19,6 +19,21 @@ public class ChromaBlockManager {
     }
 
     /**
+     * Retrieves the {@link BlockData} at the specified position within a chunk.
+     *
+     * @param position The {@link Position} within the chunk to retrieve the block data for. Must not be null.
+     * @return The {@link BlockData} at the specified position within the chunk, or {@code null} if the position is
+     *         invalid or not found.
+     */
+    public BlockData getBlockData(@NotNull Position position) {
+        try {
+            return blockDataCache.get(Chunk.getChunkKey(position.blockX() >> 4, position.blockZ() >> 4)).get(position);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * Sends a multi-block change packet to refresh all blocks currently
      * stored in the block data cache for the specified player.
      * <p>
@@ -83,7 +98,7 @@ public class ChromaBlockManager {
      *                  If the chunk key derived from the position is not present in the cache, the block is not set.
      */
     public void setBlock(@NotNull Position position, @NotNull BlockData blockData) {
-        System.out.println(blockDataCache.containsKey(Chunk.getChunkKey(position.blockX(), position.blockZ())) + " < chroma lol");
+        System.out.println(blockDataCache.containsKey(Chunk.getChunkKey(position.blockX() >> 4, position.blockZ() >> 4)) + " < chroma lol");
         if (!blockDataCache.containsKey(Chunk.getChunkKey(position.blockX(), position.blockZ()))) return;
         blockDataCache.get(Chunk.getChunkKey(position.blockX(), position.blockZ())).put(position, blockData);
     }

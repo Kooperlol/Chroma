@@ -71,6 +71,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.sign.Side;
 import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.CraftEquipmentSlot;
@@ -596,11 +597,12 @@ public class CraftEventFactory {
 
         // Chroma start
         if ((action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) && blockClicked != null && player.getChromaBlockManager().hasBlockData(blockClicked.getChunk().getChunkKey(), Position.block(blockClicked.getLocation()))) {
-            System.out.println("canceled place event");
+            io.papermc.paper.math.Position pos = Position.block(blockClicked.getLocation());
+            BlockData blockData = player.getChromaBlockManager().getBlockData(pos);
+            player.sendMultiBlockChange(Map.of(pos, blockData));
             event.setCancelled(true);
         }
         // Chroma end
-
 
         if (cancelledBlock) {
             event.setUseInteractedBlock(Event.Result.DENY);
