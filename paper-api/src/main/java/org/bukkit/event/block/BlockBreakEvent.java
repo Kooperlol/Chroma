@@ -51,7 +51,7 @@ public class BlockBreakEvent extends BlockExpEvent implements Cancellable {
     /**
      * Whether the block broken is client sided.
      *
-     * @returns Whether the block is client sided.
+     * @return Whether the block is client sided.
      */
     public boolean isClientSided() {
         return clientSided;
