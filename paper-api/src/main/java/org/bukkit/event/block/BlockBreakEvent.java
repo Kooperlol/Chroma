@@ -30,12 +30,31 @@ public class BlockBreakEvent extends BlockExpEvent implements Cancellable {
     private final Player player;
     private boolean dropItems;
     private boolean cancel;
+    private boolean clientSided;
 
     public BlockBreakEvent(@NotNull final Block theBlock, @NotNull final Player player) {
         super(theBlock, 0);
-
+        this.clientSided = false;
         this.player = player;
         this.dropItems = true; // Defaults to dropping items as it normally would
+    }
+
+    /**
+     * Sets whether the block is client sided.
+     *
+     * @param clientSided Whether the block is client sided.
+     */
+    public void setClientSided(boolean clientSided) {
+        this.clientSided = clientSided;
+    }
+
+    /**
+     * Whether the block broken is client sided.
+     *
+     * @returns Whether the block is client sided.
+     */
+    public boolean isClientSided() {
+        return clientSided;
     }
 
     /**

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import io.papermc.paper.math.Position;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
@@ -575,6 +576,12 @@ public class CraftEventFactory {
         Block blockClicked = null;
         if (position != null) {
             blockClicked = craftWorld.getBlockAt(position.getX(), position.getY(), position.getZ());
+            // Chroma start
+            if (player.getChromaBlockManager().hasBlockData(blockClicked.getChunk().getChunkKey(), Position.block(blockClicked.getLocation()))) {
+                System.out.println("blocked");
+                cancelledBlock = true;
+            }
+            // Chroma end
         } else {
             switch (action) {
                 case LEFT_CLICK_BLOCK:

@@ -80,6 +80,15 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
     @Override
     @org.jetbrains.annotations.UnmodifiableView @NotNull Iterable<? extends net.kyori.adventure.bossbar.BossBar> activeBossBars();
 
+    // Chroma start
+    /**
+     * Gets the chroma block manager for the player.
+     *
+     * @return The chroma block manager.
+     */
+    codes.kooper.ChromaBlockManager getChromaBlockManager();
+    // Chroma end
+
     /**
      * Gets the "friendly" name to display of this player.
      *

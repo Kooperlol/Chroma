@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.entity;
 
+import codes.kooper.ChromaBlockManager;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.BaseEncoding;
@@ -8,6 +9,7 @@ import com.mojang.datafixers.util.Pair;
 import io.netty.buffer.Unpooled;
 import io.papermc.paper.FeatureHooks;
 import io.papermc.paper.entity.LookAnchor;
+import io.papermc.paper.math.Position;
 import it.unimi.dsi.fastutil.shorts.ShortArraySet;
 import it.unimi.dsi.fastutil.shorts.ShortSet;
 import java.io.ByteArrayOutputStream;
@@ -167,7 +169,6 @@ import org.bukkit.craftbukkit.map.CraftMapView;
 import org.bukkit.craftbukkit.map.RenderData;
 import org.bukkit.craftbukkit.potion.CraftPotionEffectType;
 import org.bukkit.craftbukkit.potion.CraftPotionUtil;
-import org.bukkit.craftbukkit.profile.CraftPlayerProfile;
 import org.bukkit.craftbukkit.scoreboard.CraftScoreboard;
 import org.bukkit.craftbukkit.util.CraftChatMessage;
 import org.bukkit.craftbukkit.util.CraftLocation;
@@ -181,7 +182,6 @@ import org.bukkit.event.player.PlayerExpCooldownChangeEvent;
 import org.bukkit.event.player.PlayerHideEntityEvent;
 import org.bukkit.event.player.PlayerRegisterChannelEvent;
 import org.bukkit.event.player.PlayerShowEntityEvent;
-import org.bukkit.event.player.PlayerSpawnChangeEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerUnregisterChannelEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -194,7 +194,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.StandardMessenger;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.profile.PlayerProfile;
 import org.bukkit.scoreboard.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 
@@ -211,6 +210,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
     private final Set<UUID> unlistedEntities = new HashSet<>(); // Paper - Add Listing API for Player
     private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
     private int hash = 0;
+    private final codes.kooper.ChromaBlockManager chromaBlockManager; // Chroma - Block Manager Instance
     private double health = 20;
     private boolean scaledHealth = false;
     private double healthScale = 20;
@@ -222,7 +222,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
     public CraftPlayer(CraftServer server, ServerPlayer entity) {
         super(server, entity);
-
+        this.chromaBlockManager = new ChromaBlockManager();
         this.firstPlayed = System.currentTimeMillis();
     }
 
@@ -999,6 +999,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
             it.unimi.dsi.fastutil.shorts.Short2ObjectMap<net.minecraft.world.level.block.state.BlockState> sectionData = sectionMap.computeIfAbsent(sectionPos, key -> new it.unimi.dsi.fastutil.shorts.Short2ObjectArrayMap<>());
             sectionData.put(SectionPos.sectionRelativePos(blockPos), ((CraftBlockData) blockData).getState());
+            chromaBlockManager.addBlockData(sectionPos.chunk().longKey, Position.block(blockPos.getX(), blockPos.getY(), blockPos.getZ()), blockData); // Chroma - Cache to block change manager
         }
 
         for (Map.Entry<SectionPos, it.unimi.dsi.fastutil.shorts.Short2ObjectMap<net.minecraft.world.level.block.state.BlockState>> entry : sectionMap.entrySet()) {
@@ -3232,6 +3233,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
             return java.util.Collections.unmodifiableSet(this.activeBossBars);
         }
         return Set.of();
+    }
+
+    @Override
+    public codes.kooper.ChromaBlockManager getChromaBlockManager() {
+        return chromaBlockManager;
     }
 
     @Override
