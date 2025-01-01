@@ -594,7 +594,8 @@ public class CraftEventFactory {
 
         PlayerInteractEvent event = new PlayerInteractEvent(player, action, itemInHand, blockClicked, blockFace, (hand == null) ? null : ((hand == InteractionHand.OFF_HAND) ? EquipmentSlot.OFF_HAND : EquipmentSlot.HAND), clickedPos);
         // Chroma start
-        if (blockClicked != null && action.isRightClick() && player.getChromaBlockManager().hasBlockData(blockClicked.getChunk().getChunkKey(), Position.block(blockClicked.getLocation()))) {
+        if (action.isRightClick() && player.getChromaBlockManager().hasBlockData(craftWorld.getChunkAt(position.getX(), position.getZ()).getChunkKey(), Position.block(position.getX(), position.getY(), position.getZ()))) {
+            System.out.println("canceled event");
             event.setCancelled(true);
         }
         // Chroma end

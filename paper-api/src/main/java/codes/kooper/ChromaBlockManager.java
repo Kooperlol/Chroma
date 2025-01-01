@@ -2,9 +2,12 @@ package codes.kooper;
 
 import io.papermc.paper.math.Position;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import org.bukkit.Chunk;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +16,75 @@ public class ChromaBlockManager {
 
     public ChromaBlockManager() {
         blockDataCache = new Long2ObjectOpenHashMap<>();
+    }
+
+    /**
+     * Sends a multi-block change packet to refresh all blocks currently
+     * stored in the block data cache for the specified player.
+     * <p>
+     * This method retrieves all block data from all cached chunks and updates
+     * the player's client with the latest block states.
+     *
+     * @param player The player to send the block updates to. Must not be null.
+     */
+    public void refreshAllBlocks(@NotNull Player player) {
+        Map<Position, BlockData> blocksToUpdate = new HashMap<>();
+
+        for (long chunkKey : blockDataCache.keySet()) {
+            Map<Position, BlockData> chunkBlocks = blockDataCache.get(chunkKey);
+            blocksToUpdate.putAll(chunkBlocks);
+        }
+
+        if (!blocksToUpdate.isEmpty()) {
+            player.sendMultiBlockChange(blocksToUpdate);
+        }
+    }
+
+    /**
+     * Refreshes blocks for the specified player at the given positions.
+     * Sends a multi-block change packet to update the block data.
+     *
+     * @param player    The player to send the block changes to.
+     * @param positions The collection of positions to refresh.
+     */
+    public void refreshBlocks(@NotNull Player player, @NotNull Collection<Position> positions) {
+        Map<Position, BlockData> blocksToUpdate = new HashMap<>();
+
+        for (Position position : positions) {
+            long chunkKey = Chunk.getChunkKey(position.blockX(), position.blockZ());
+            Map<Position, BlockData> chunkBlocks = blockDataCache.get(chunkKey);
+
+            if (chunkBlocks != null && chunkBlocks.containsKey(position)) {
+                BlockData blockData = chunkBlocks.get(position);
+                blocksToUpdate.put(position, blockData);
+            }
+        }
+
+        if (!blocksToUpdate.isEmpty()) {
+            player.sendMultiBlockChange(blocksToUpdate);
+        }
+    }
+
+    /**
+     * Sets multiple blocks in the block data cache using the specified map of positions and block data.
+     *
+     * @param entries A map containing {@link Position} objects as keys and {@link BlockData} as values.
+     *                Each entry represents the position of the block and the corresponding block data to set.
+     */
+    public void setMultipleBlocks(@NotNull Map<Position, BlockData> entries) {
+        entries.forEach(this::setBlock);
+    }
+
+    /**
+     * Sets a block in the block data cache at the specified position with the given block data.
+     *
+     * @param position  The {@link Position} of the block to set.
+     * @param blockData The {@link BlockData} to assign to the block at the specified position.
+     *                  If the chunk key derived from the position is not present in the cache, the block is not set.
+     */
+    public void setBlock(@NotNull Position position, @NotNull BlockData blockData) {
+        if (!blockDataCache.containsKey(Chunk.getChunkKey(position.blockX(), position.blockZ()))) return;
+        blockDataCache.get(Chunk.getChunkKey(position.blockX(), position.blockZ())).put(position, blockData);
     }
 
     /**
