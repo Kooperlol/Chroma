@@ -83,6 +83,7 @@ public class ChromaBlockManager {
      *                  If the chunk key derived from the position is not present in the cache, the block is not set.
      */
     public void setBlock(@NotNull Position position, @NotNull BlockData blockData) {
+        System.out.println(blockDataCache.containsKey(Chunk.getChunkKey(position.blockX(), position.blockZ())) + " < chroma lol");
         if (!blockDataCache.containsKey(Chunk.getChunkKey(position.blockX(), position.blockZ()))) return;
         blockDataCache.get(Chunk.getChunkKey(position.blockX(), position.blockZ())).put(position, blockData);
     }
