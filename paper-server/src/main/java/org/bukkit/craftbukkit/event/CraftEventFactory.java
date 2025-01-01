@@ -445,6 +445,13 @@ public class CraftEventFactory {
 
         boolean canBuild = CraftEventFactory.canBuild(world, player, placedBlock.getX(), placedBlock.getZ());
 
+        // Chroma start
+        if (player.getChromaBlockManager().hasBlockData(blockClicked.getChunk().getChunkKey(), Position.block(blockClicked.getLocation()))) {
+            System.out.println("canceled place event");
+            canBuild = false;
+        }
+        // Chroma end
+
         org.bukkit.inventory.ItemStack item;
         EquipmentSlot equipmentSlot;
         if (hand == InteractionHand.MAIN_HAND) {
@@ -593,12 +600,6 @@ public class CraftEventFactory {
         }
 
         PlayerInteractEvent event = new PlayerInteractEvent(player, action, itemInHand, blockClicked, blockFace, (hand == null) ? null : ((hand == InteractionHand.OFF_HAND) ? EquipmentSlot.OFF_HAND : EquipmentSlot.HAND), clickedPos);
-        // Chroma start
-        if (action.isRightClick() && player.getChromaBlockManager().hasBlockData(craftWorld.getChunkAt(position.getX(), position.getZ()).getChunkKey(), Position.block(position.getX(), position.getY(), position.getZ()))) {
-            System.out.println("canceled event");
-            event.setCancelled(true);
-        }
-        // Chroma end
 
         if (cancelledBlock) {
             event.setUseInteractedBlock(Event.Result.DENY);
