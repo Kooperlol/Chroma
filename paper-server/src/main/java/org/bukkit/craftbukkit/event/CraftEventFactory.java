@@ -571,6 +571,8 @@ public class CraftEventFactory {
             clickedPos = CraftVector.toBukkit(targetPos.subtract(Vec3.atLowerCornerOf(position)));
         }
 
+        System.out.println(clickedPos + " Debug");
+
         CraftWorld craftWorld = (CraftWorld) player.getWorld();
         CraftServer craftServer = (CraftServer) player.getServer();
 
