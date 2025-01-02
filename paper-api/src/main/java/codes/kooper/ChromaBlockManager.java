@@ -119,8 +119,8 @@ public class ChromaBlockManager {
      * @param position  the position of the block
      * @param blockData the block data to add
      */
-    public void addBlockData(long chunkKey, @NotNull Position position, @NotNull BlockData blockData) {
-        blockDataCache.computeIfAbsent(chunkKey, k -> new HashMap<>()).put(position, blockData);
+    public void addBlockData(@NotNull Position position, @NotNull BlockData blockData) {
+        blockDataCache.computeIfAbsent(Chunk.getChunkKey(position.blockX() >> 4 , position.blockZ() >> 4), k -> new HashMap<>()).put(position, blockData);
     }
 
     /**

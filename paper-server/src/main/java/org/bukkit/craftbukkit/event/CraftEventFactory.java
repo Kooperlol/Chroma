@@ -603,14 +603,7 @@ public class CraftEventFactory {
             event.setUseItemInHand(Result.DENY);
         }
         // Paper end
-        // Chroma start
-        if (action.isRightClick() && player.getChromaBlockManager().hasBlockData(Position.block(clickedPos.toLocation(player.getWorld())))) {
-            System.out.println("YOOOOOOO");
-        } else {
-            craftServer.getPluginManager().callEvent(event);
-        }
-        // Chroma end
-
+        craftServer.getPluginManager().callEvent(event);
         return event;
     }
 

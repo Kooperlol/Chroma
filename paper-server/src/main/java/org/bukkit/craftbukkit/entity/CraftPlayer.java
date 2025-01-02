@@ -115,6 +115,7 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
@@ -999,7 +1000,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
             it.unimi.dsi.fastutil.shorts.Short2ObjectMap<net.minecraft.world.level.block.state.BlockState> sectionData = sectionMap.computeIfAbsent(sectionPos, key -> new it.unimi.dsi.fastutil.shorts.Short2ObjectArrayMap<>());
             sectionData.put(SectionPos.sectionRelativePos(blockPos), ((CraftBlockData) blockData).getState());
-            chromaBlockManager.addBlockData(sectionPos.chunk().longKey, Position.block(blockPos.getX(), blockPos.getY(), blockPos.getZ()), blockData); // Chroma - Cache to block change manager
+            chromaBlockManager.addBlockData(Position.block(blockPos.getX(), blockPos.getY(), blockPos.getZ()), blockData); // Chroma - Cache to block change manager
         }
 
         for (Map.Entry<SectionPos, it.unimi.dsi.fastutil.shorts.Short2ObjectMap<net.minecraft.world.level.block.state.BlockState>> entry : sectionMap.entrySet()) {
