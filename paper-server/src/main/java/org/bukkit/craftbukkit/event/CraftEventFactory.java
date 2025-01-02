@@ -571,8 +571,6 @@ public class CraftEventFactory {
             clickedPos = CraftVector.toBukkit(targetPos.subtract(Vec3.atLowerCornerOf(position)));
         }
 
-        System.out.println(clickedPos + " Debug");
-
         CraftWorld craftWorld = (CraftWorld) player.getWorld();
         CraftServer craftServer = (CraftServer) player.getServer();
 
@@ -605,7 +603,13 @@ public class CraftEventFactory {
             event.setUseItemInHand(Result.DENY);
         }
         // Paper end
-        craftServer.getPluginManager().callEvent(event);
+        // Chroma start
+        if (action.isRightClick() && player.getChromaBlockManager().hasBlockData(Position.block(clickedPos.toLocation(player.getWorld())))) {
+            System.out.println("YOOOOOOO");
+        } else {
+            craftServer.getPluginManager().callEvent(event);
+        }
+        // Chroma end
 
         return event;
     }
