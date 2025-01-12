@@ -1,9 +1,13 @@
 package org.bukkit.event.block;
 
+import codes.kooper.models.Stage;
+import codes.kooper.models.View;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Called when a block is broken by a player.
@@ -31,12 +35,72 @@ public class BlockBreakEvent extends BlockExpEvent implements Cancellable {
     private boolean dropItems;
     private boolean cancel;
     private boolean clientSided;
+    private BlockData blockData;
+    private Stage stage;
+    private View view;
 
     public BlockBreakEvent(@NotNull final Block theBlock, @NotNull final Player player) {
         super(theBlock, 0);
         this.clientSided = false;
         this.player = player;
         this.dropItems = true; // Defaults to dropping items as it normally would
+    }
+
+    /**
+     * The client-sided block's data.
+     *
+     * @return The client-sided block's data or null if it is a real block.
+     */
+    @Nullable
+    public BlockData getBlockData() {
+        return blockData;
+    }
+
+    /**
+     * Sets the block data for the client-sided block.
+     *
+     * @param blockData The block data for the client-sided block.
+     */
+    public void setBlockData(@NotNull BlockData blockData) {
+        this.blockData = blockData;
+    }
+
+    /**
+     * Sets the stage for the client-sided block.
+     *
+     * @param stage The stage to set.
+     */
+    public void setStage(@Nullable Stage stage) {
+        this.stage = stage;
+    }
+
+    /**
+     * Sets the view for the client-sided block.
+     *
+     * @param view The view to set.
+     */
+    public void setView(@Nullable View view) {
+        this.view = view;
+    }
+
+    /**
+     * Gets the stage the client-sided block was broken in.
+     *
+     * @return The stage the block was broken in, or else null.
+     */
+    @Nullable
+    public Stage getStage() {
+        return stage;
+    }
+
+    /**
+     * Gets the view the client-sided block was broken in.
+     *
+     * @return The view the block was broken in, or else null.
+     */
+    @Nullable
+    public View getView() {
+        return view;
     }
 
     /**

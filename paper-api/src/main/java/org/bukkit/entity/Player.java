@@ -9,7 +9,9 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import codes.kooper.models.View;
 import io.papermc.paper.entity.LookAnchor;
+import io.papermc.paper.math.Position;
 import org.bukkit.BanEntry;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
@@ -87,6 +89,15 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * @return The chroma block manager.
      */
     @NotNull codes.kooper.ChromaBlockManager getChromaBlockManager();
+
+
+    /**
+     * Sends a multi block change packet using Chroma.
+     *
+     * @param view The view to send the changes in.
+     * @param blockChanges The block changes to update on the client.
+     */
+    void sendChromaBlockChange(@NotNull View view, @NotNull Map<? extends Position, BlockData> blockChanges);
     // Chroma end
 
     /**

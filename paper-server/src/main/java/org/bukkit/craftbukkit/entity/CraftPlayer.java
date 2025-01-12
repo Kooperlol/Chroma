@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit.entity;
 
 import codes.kooper.ChromaBlockManager;
+import codes.kooper.models.View;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.BaseEncoding;
@@ -223,7 +224,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
     public CraftPlayer(CraftServer server, ServerPlayer entity) {
         super(server, entity);
-        this.chromaBlockManager = new ChromaBlockManager();
+        this.chromaBlockManager = new ChromaBlockManager(this);
         this.firstPlayed = System.currentTimeMillis();
     }
 
@@ -986,21 +987,55 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         this.getHandle().connection.send(packet);
     }
 
+    // Chroma start
+    /**
+     * Sends a multi-block change packet for the specified view, updating the client with the given block changes.
+     *
+     * @param view         The view in which the block changes occur.
+     * @param blockChanges A map of positions to block data representing the changes.
+     */
+    @Override
+    public void sendChromaBlockChange(@NotNull View view, @NotNull Map<? extends Position, BlockData> blockChanges) {
+        Map<Position, BlockData> filteredChanges = new HashMap<>();
+
+        // Filter block changes to include only those within the view's bounds
+        for (Map.Entry<? extends Position, BlockData> entry : blockChanges.entrySet()) {
+            Position position = entry.getKey();
+
+            // Check if the position is within the view's bounds
+            if (view.getBound().contains(position)) {
+                filteredChanges.put(position, entry.getValue());
+
+                // Ensure the chunk exists in the cache and add/update block data
+                chromaBlockManager.addBlockData(position, entry.getValue(), view.getName());
+            }
+        }
+
+        // Send the filtered changes to the client
+        if (!filteredChanges.isEmpty()) {
+            sendMultiBlockChange(filteredChanges);
+            for (Player player : chromaBlockManager.getSpectators()) {
+                player.sendMultiBlockChange(filteredChanges);
+            }
+        }
+    }
+    // Chroma end
+
     // Paper start
     @Override
     public void sendMultiBlockChange(final Map<? extends io.papermc.paper.math.Position, BlockData> blockChanges) {
         if (this.getHandle().connection == null) return;
 
         Map<SectionPos, it.unimi.dsi.fastutil.shorts.Short2ObjectMap<net.minecraft.world.level.block.state.BlockState>> sectionMap = new HashMap<>();
+        Map<? extends io.papermc.paper.math.Position, BlockData> snapshot = new HashMap<>(blockChanges);
 
-        for (Map.Entry<? extends io.papermc.paper.math.Position, BlockData> entry : blockChanges.entrySet()) {
+        for (Map.Entry<? extends io.papermc.paper.math.Position, BlockData> entry : snapshot.entrySet()) {
             BlockData blockData = entry.getValue();
             BlockPos blockPos = io.papermc.paper.util.MCUtil.toBlockPos(entry.getKey());
             SectionPos sectionPos = SectionPos.of(blockPos);
 
             it.unimi.dsi.fastutil.shorts.Short2ObjectMap<net.minecraft.world.level.block.state.BlockState> sectionData = sectionMap.computeIfAbsent(sectionPos, key -> new it.unimi.dsi.fastutil.shorts.Short2ObjectArrayMap<>());
             sectionData.put(SectionPos.sectionRelativePos(blockPos), ((CraftBlockData) blockData).getState());
-            chromaBlockManager.addBlockData(Position.block(blockPos.getX(), blockPos.getY(), blockPos.getZ()), blockData); // Chroma - Cache to block change manager
         }
 
         for (Map.Entry<SectionPos, it.unimi.dsi.fastutil.shorts.Short2ObjectMap<net.minecraft.world.level.block.state.BlockState>> entry : sectionMap.entrySet()) {
